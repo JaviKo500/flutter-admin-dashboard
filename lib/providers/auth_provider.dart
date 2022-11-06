@@ -1,8 +1,16 @@
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'package:admin_dashboard/api/coffee_api.dart';
+
+import 'package:admin_dashboard/models/http/auth_response.dart';
+
 import 'package:admin_dashboard/router/router.dart';
+
 import 'package:admin_dashboard/services/local_storage.dart';
 import 'package:admin_dashboard/services/navigation_service.dart';
-import 'package:flutter/material.dart';
+import 'package:admin_dashboard/services/notification_service.dart';
 
 enum AuthStatus{
   checking,
@@ -17,17 +25,28 @@ class AuthProvider extends ChangeNotifier {
 
   String? _token;
   AuthStatus authStatus = AuthStatus.checking;
+  Usuario? user;
   login( String email, String password ) async {
-    // TODO: reques http
-    _token = 'asasaewfgsd12323434rfasafrgf.dsdsd.dsdsdsds';
-    print(' jwt: $_token');
-
-    // TODO: navigate dashboard
-    LocalStorage.prefs.setString('token', _token!);
-    await Future.delayed( const Duration(seconds: 1));
-    authStatus = AuthStatus.authenticated;
-    notifyListeners();
-    NavigationService.replaceTo(CustomFluroRouter.dashboardRoute);
+    final data = {
+      'correo': email,
+      'password': password,
+    };
+    CoffeeApi.httpPost('/auth/login', data)
+      .then(( json) {
+        final authResponse = AuthResponse.fromMap(json);
+        user = authResponse.usuario;
+        LocalStorage.prefs.setString('token', authResponse.token);
+        authStatus = AuthStatus.authenticated;
+        NavigationService.replaceTo(CustomFluroRouter.dashboardRoute);
+        notifyListeners();
+        CoffeeApi.configureDio();
+      })
+      .catchError( (error) {
+        if (kDebugMode) {
+          print(error.toString());
+        }
+        NotificationService.showSnackbarError('Invalid credentials');
+      });
 
   }
 
@@ -38,10 +57,51 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-    // TODO check valid token
-    await Future.delayed( const Duration(seconds: 2));
-    authStatus = AuthStatus.authenticated;
+    try {
+      final response = await CoffeeApi.httpGet('/auth');
+      final authResponse = AuthResponse.fromMap(response);
+      user = authResponse.usuario;
+      authStatus = AuthStatus.authenticated;
+      LocalStorage.prefs.setString('token', authResponse.token);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      authStatus = AuthStatus.notAuthenticated;
+      LocalStorage.prefs.clear();
+      notifyListeners();
+      return false;
+    }
+  }
+
+  register( String name, String email, String password ) async {
+    final data = {
+      'nombre': name,
+      'correo': email,
+      'password': password,
+    };
+    CoffeeApi.httpPost('/usuarios', data)
+      .then((json) {
+        print(json);
+        final authResponse = AuthResponse.fromMap(json);
+        user = authResponse.usuario;
+        LocalStorage.prefs.setString('token', authResponse.token);
+        authStatus = AuthStatus.authenticated;
+        NavigationService.replaceTo(CustomFluroRouter.dashboardRoute);
+        notifyListeners();
+        CoffeeApi.configureDio();
+      })
+      .catchError( (error) {
+        NotificationService.showSnackbarError( 'Invalid credentials');
+      });
+
+  }
+
+  logout() {
+    LocalStorage.prefs.remove('token');
+    authStatus = AuthStatus.notAuthenticated;
     notifyListeners();
-    return true;
   }
 }

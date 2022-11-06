@@ -1,11 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:email_validator/email_validator.dart';
+
+import 'package:admin_dashboard/providers/auth_provider.dart';
 import 'package:admin_dashboard/providers/register_form_provider.dart';
+
 import 'package:admin_dashboard/router/router.dart';
+
 import 'package:admin_dashboard/ui/buttons/custom_outline_button.dart';
 import 'package:admin_dashboard/ui/buttons/link_text.dart';
 import 'package:admin_dashboard/ui/inputs/custom_inputs.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 
 class RegisterView extends StatelessWidget {
@@ -76,7 +81,14 @@ class RegisterView extends StatelessWidget {
                         const SizedBox(height: 20,),
                         CustomOutlineButton(
                           onPressed: (){
-                            registerFormProvider.validateForm();
+                            final isValidForm =  registerFormProvider.validateForm();
+                            if( !isValidForm ) return;
+                            final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                            authProvider.register(
+                              registerFormProvider.name, 
+                              registerFormProvider.email, 
+                              registerFormProvider.password
+                            );
                           }, 
                           text: 'Create account'
                         ),
@@ -84,7 +96,7 @@ class RegisterView extends StatelessWidget {
                         LinkText(
                           text: 'Log in',
                           onPressed: (){
-                             Navigator.pushNamed( context, CustomFluroRouter.loginRoute);
+                             Navigator.pushReplacementNamed( context, CustomFluroRouter.loginRoute);
                           },
                         )
                       ],
