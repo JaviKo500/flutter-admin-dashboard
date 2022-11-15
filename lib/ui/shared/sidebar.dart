@@ -67,10 +67,10 @@ class Sidebar extends StatelessWidget {
             onPressed: () => navigateTo( CustomFluroRouter.dashboardRoute)
           ),
           CustomMenuItem( 
-            // isActive: sideMenuBar.currentPage == '', 
+            isActive: sideMenuBar.currentPage == CustomFluroRouter.usersRoute, 
             text: 'Customers', 
             icon: Icons.people_alt_outlined, 
-            onPressed: () => navigateTo( CustomFluroRouter.dashboardRoute)
+            onPressed: () => navigateTo( CustomFluroRouter.usersRoute)
           ),
           
           const SizedBox(height: 30,),
