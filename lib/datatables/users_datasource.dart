@@ -1,27 +1,40 @@
 
 
+import 'package:admin_dashboard/models/user.dart';
+import 'package:admin_dashboard/services/navigation_service.dart';
 import 'package:flutter/material.dart';
 
 class UsersDataSource extends DataTableSource {
+  UsersDataSource( this.users );
+  List< Usuario > users;
   @override
   DataRow? getRow(int index) {
+    final Usuario user = users[index];
+    const  image = Image(image: AssetImage( 'no-image.jpg' ), width: 35, height: 35, );
     return DataRow.byIndex(
       index: index,
       cells: [
-        DataCell(
-          Text( index.toString() )
+        const DataCell(
+          ClipOval(
+            child: image,
+          )
         ),
         DataCell(
-          Text( index.toString() )
+          Text( user.nombre )
         ),
         DataCell(
-          Text( index.toString() )
+          Text( user.correo )
         ),
         DataCell(
-          Text( index.toString() )
+          Text( user.uid )
         ),
         DataCell(
-          Text( index.toString() )
+          IconButton(
+            onPressed: () {
+               NavigationService.navigateTo('dashboard/users/${user.uid}');
+            }, 
+            icon: const Icon(Icons.edit_outlined),
+          )
         ),
       ]);
   }
@@ -30,7 +43,7 @@ class UsersDataSource extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => 100;
+  int get rowCount => users.length;
 
   @override
   int get selectedRowCount => 0;

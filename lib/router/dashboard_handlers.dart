@@ -1,3 +1,4 @@
+import 'package:admin_dashboard/ui/views/user_view.dart';
 import 'package:fluro/fluro.dart';
 import 'package:provider/provider.dart';
 
@@ -72,6 +73,22 @@ class DashboardHandlers {
         return const LoginView();
       } else {
         return const UsersView();
+      }
+    },
+  );
+  static Handler user = Handler(
+    handlerFunc: (context, parameters) {
+      final authProvider = Provider.of<AuthProvider>(context!, listen: false);
+      Provider.of<SideMenuProvider>(context, listen: false)
+        .setCurrentPageUrl( CustomFluroRouter.userRoute );
+      if (authProvider.authStatus == AuthStatus.notAuthenticated) {
+        return const LoginView();
+      } else {
+        if ( parameters['uid']?.first != null ) {
+          return UserView(uid: parameters['uid']!.first);
+        } else {
+          return const UsersView();
+        }
       }
     },
   );

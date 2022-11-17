@@ -1,6 +1,6 @@
 
+import 'package:admin_dashboard/models/user.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import 'package:admin_dashboard/api/coffee_api.dart';
 
