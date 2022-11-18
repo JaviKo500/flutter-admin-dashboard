@@ -46,7 +46,7 @@ class CoffeeApi {
     try {
       final response =  await _dio.put( path, data: formData);
       return response.data;
-    } catch (e) {
+    } on DioError catch (e) {
       if (kDebugMode) {
         print(e);
         throw('Error in put');

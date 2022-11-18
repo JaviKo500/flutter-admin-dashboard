@@ -23,7 +23,7 @@ class UsersProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future< Usuario > getUserById ( String uid) async{
+  Future< Usuario? > getUserById ( String uid) async{
     try {
       final resp = await CoffeeApi.httpGet('/usuarios/$uid');
       final userResp = Usuario.fromMap(resp);
@@ -32,7 +32,7 @@ class UsersProvider extends ChangeNotifier{
       if (kDebugMode) {
         print(e);
       }
-      rethrow;
+      return null;
     }
   }
 
@@ -48,4 +48,13 @@ class UsersProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+  void refreshUser ( Usuario user ){
+    users = users.map(( u ) {
+      if ( u.uid == user.uid) {
+        return user;
+      }
+      return u;
+    }).toList();
+    notifyListeners();
+  }
 }

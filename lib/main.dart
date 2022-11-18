@@ -1,3 +1,4 @@
+import 'package:admin_dashboard/providers/user_form_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +38,7 @@ const AppState({Key? key}) : super(key: key);
         ChangeNotifierProvider( lazy: false, create: ( _ ) => AuthProvider() ),
         ChangeNotifierProvider( lazy: false, create: ( _ ) => SideMenuProvider() ),
         ChangeNotifierProvider( create: ( _ ) => CategoriesProvider() ),
+        ChangeNotifierProvider( create: ( _ ) => UserFormProvider() ),
         ChangeNotifierProvider( create: ( _ ) => UsersProvider() )
       ],
       child: const MyApp(),
