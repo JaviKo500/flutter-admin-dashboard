@@ -53,6 +53,20 @@ class CoffeeApi {
       }
     }
   }
+  static Future httpUploadFile( String path, Uint8List bytes ) async {
+    final formData = FormData.fromMap({
+      'archivo': MultipartFile.fromBytes( bytes ),
+    });
+    try {
+      final response =  await _dio.put( path, data: formData);
+      return response.data;
+    } on DioError catch (e) {
+      if (kDebugMode) {
+        print(e);
+        throw('Error in upload  file');
+      }
+    }
+  }
 
   static Future httpDelete( String path ) async {
     try {

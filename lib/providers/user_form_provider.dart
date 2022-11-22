@@ -66,5 +66,18 @@ class UserFormProvider extends ChangeNotifier{
       return false;
     }
   } 
+  Future< Usuario > uploadImage  ( String path, Uint8List bytes ) async {
+    try {
+      final resp = await CoffeeApi.httpUploadFile(path, bytes);
+      user = Usuario.fromMap( resp );
+      notifyListeners();
+      return user!;
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+      throw 'Error in user form provider';
+    }
+  }
 
 }

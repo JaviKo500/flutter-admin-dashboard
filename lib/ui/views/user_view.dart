@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:admin_dashboard/models/user.dart';
 import 'package:admin_dashboard/providers/user_form_provider.dart';
 import 'package:admin_dashboard/providers/users_provider.dart';
@@ -7,6 +9,7 @@ import 'package:admin_dashboard/ui/cards/white_card.dart';
 import 'package:admin_dashboard/ui/inputs/custom_inputs.dart';
 import 'package:admin_dashboard/ui/labels/custom_labels.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -195,6 +198,11 @@ class _AvatarContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final userFormProvider = Provider.of<UserFormProvider>(context);
     final user = userFormProvider.user;
+
+    final  img = ( user?.img == null) ? const Image(
+          image: AssetImage('no-image.jpg'),
+        )
+      : FadeInImage.assetNetwork(placeholder: 'loader.gif' , image: user!.img!);
     return WhiteCard(
       width: 250,
       child: SizedBox(
@@ -210,10 +218,8 @@ class _AvatarContainer extends StatelessWidget {
               height: 160,
               child: Stack(
                 children: [
-                  const ClipOval(
-                    child: Image(
-                      image: AssetImage('no-image.jpg'),
-                    ),
+                  ClipOval(
+                    child: img,
                   ),
                   Positioned(
                     bottom: 5,
@@ -229,8 +235,20 @@ class _AvatarContainer extends StatelessWidget {
                         backgroundColor: Colors.indigo,
                         elevation: 0,
                         child: const Icon(Icons.camera_alt_outlined),
-                        onPressed: () {
+                        onPressed: () async {
                            // TODO: selected image
+                          FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                                type: FileType.custom,
+                                allowedExtensions: ['jpg', 'jpeg', 'png'],
+                                allowMultiple: false,
+                            ); 
+                          if ( result != null ) {
+                            NotificationService.showBusyIndiator(context);
+                            PlatformFile file = result.files.first;
+                            final resp = await userFormProvider.uploadImage('/uploads/usuarios/${user?.uid}', file.bytes!);
+                            Navigator.of(context).pop();
+                          }
                         },
                       ),
                     ),

@@ -4,7 +4,6 @@ import 'package:admin_dashboard/api/coffee_api.dart';
 import 'package:admin_dashboard/models/http/users_response.dart';
 import 'package:admin_dashboard/models/user.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 class UsersProvider extends ChangeNotifier{
   UsersProvider(){
