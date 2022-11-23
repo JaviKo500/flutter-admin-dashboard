@@ -10,11 +10,13 @@ class UsersDataSource extends DataTableSource {
   @override
   DataRow? getRow(int index) {
     final Usuario user = users[index];
-    const  image = Image(image: AssetImage( 'no-image.jpg' ), width: 35, height: 35, );
+    final image = user.img == null 
+      ? const Image(image: AssetImage( 'no-image.jpg' ), width: 35, height: 35, )
+      : FadeInImage.assetNetwork(placeholder: 'loader.gif', image: user.img!, fit: BoxFit.cover, width: 35, height: 35,);
     return DataRow.byIndex(
       index: index,
       cells: [
-        const DataCell(
+        DataCell(
           ClipOval(
             child: image,
           )

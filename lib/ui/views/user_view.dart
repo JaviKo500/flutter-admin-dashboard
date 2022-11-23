@@ -236,7 +236,6 @@ class _AvatarContainer extends StatelessWidget {
                         elevation: 0,
                         child: const Icon(Icons.camera_alt_outlined),
                         onPressed: () async {
-                           // TODO: selected image
                           FilePickerResult? result =
                           await FilePicker.platform.pickFiles(
                                 type: FileType.custom,
@@ -246,7 +245,8 @@ class _AvatarContainer extends StatelessWidget {
                           if ( result != null ) {
                             NotificationService.showBusyIndiator(context);
                             PlatformFile file = result.files.first;
-                            final resp = await userFormProvider.uploadImage('/uploads/usuarios/${user?.uid}', file.bytes!);
+                            final newUser = await userFormProvider.uploadImage('/uploads/usuarios/${user?.uid}', file.bytes!);
+                            Provider.of<UsersProvider>(context, listen: false).refreshUser( newUser );
                             Navigator.of(context).pop();
                           }
                         },
